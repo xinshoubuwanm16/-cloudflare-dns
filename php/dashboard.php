@@ -1,0 +1,37 @@
+<?php
+/**
+ * CloudNS 控制台（SPA 外壳）
+ */
+
+declare(strict_types=1);
+
+$siteName = 'CloudNS';
+$subtitle = '二级域名分发平台';
+try {
+    if (is_file(__DIR__ . '/app/config.php')) {
+        require_once __DIR__ . '/app/bootstrap.php';
+        $s = cns_settings(['site_name', 'site_subtitle']);
+        $siteName = $s['site_name'] !== '' ? $s['site_name'] : $siteName;
+        $subtitle = $s['site_subtitle'] !== '' ? $s['site_subtitle'] : $subtitle;
+    }
+} catch (Throwable $e) {
+    // 忽略，使用默认值
+}
+?>
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<title><?= htmlspecialchars($siteName) ?> · <?= htmlspecialchars($subtitle) ?></title>
+<link rel="stylesheet" href="./assets/css/app.css?v=3">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 40'><path fill='%23F6821F' d='M44.6 33.6c.5-1.8.3-3.5-.6-4.7-.8-1.1-2.2-1.8-3.9-1.8l-31.6-.4c-.2 0-.4-.1-.5-.3-.1-.2-.1-.4 0-.6.1-.3.4-.5.7-.5l31.9-.4c3.8-.2 7.9-3.2 9.3-7l1.8-4.8c.1-.2.1-.4.1-.6C50.5 5.3 43.9 0 36 0c-7.1 0-13.2 4.6-15.4 11-2.8-2.1-6.5-3.1-10.4-2.4C3.6 9.8-.5 15.5.05 22.1c.5 5.9 5.2 10.6 11 11.4h31.9c.3 0 .6-.2.7-.5l1-3.4z'/></svg>">
+</head>
+<body>
+<div id="root"></div>
+<div class="toast-wrap" id="toast"></div>
+<script>window.CNS_API = './api.php'; window.CNS_HOME = './';</script>
+<script src="./assets/js/app.js?v=3"></script>
+</body>
+</html>

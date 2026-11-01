@@ -1,0 +1,21 @@
+{
+  "name": "cloudns",
+  "version": "1.0.0",
+  "description": "二级域名分发平台 - Cloudflare 风格 UI，支持 Cloudflare / 腾讯云 DNSPod / 阿里云 DNS，易支付充值积分、签到、积分购买域名",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "node scripts/test-api.js"
+  },
+  "keywords": ["dns", "subdomain", "cloudflare", "dnspod", "epay"],
+  "license": "MIT",
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "better-sqlite3": "^13.0.3",
+    "express": "^5.3.0"
+  }
+}

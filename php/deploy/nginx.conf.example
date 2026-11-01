@@ -1,0 +1,47 @@
+# CloudNS PHP 版 Nginx 配置片段（宝塔在站点设置里加入或用此完整配置）
+# 假设网站根目录为 /www/wwwroot/cloudns（即 php/ 目录的内容上传到这里）
+
+server {
+    listen 80;
+    server_name yourdomain.com;
+    root /www/wwwroot/cloudns;
+    index index.php;
+
+    # 禁止访问应用代码与数据目录
+    location ~ ^/(app|data)/ {
+        deny all;
+    }
+
+    # 保护配置文件
+    location ~ config\.php$ {
+        deny all;
+    }
+
+    # 伪静态：/dashboard -> dashboard.php
+    location = /dashboard {
+        rewrite ^ /dashboard.php last;
+    }
+
+    # PHP 处理（宝塔的 enable-php-82.conf 已包含类似内容）
+    location ~ [^/]\.php(/|$) {
+        try_files $uri =404;
+        fastcgi_pass unix:/tmp/php-cgi-82.sock;
+        fastcgi_index index.php;
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+
+        # 关键：开启 PATH_INFO，易支付异步通知地址 /api.php/pay/notify 依赖它
+        fastcgi_split_path_info ^(.+?\.php)(/.*)$;
+        fastcgi_param PATH_INFO       $fastcgi_path_info;
+    }
+
+    location / {
+        try_files $uri $uri/ /index.php$is_args$args;
+    }
+
+    # 静态资源缓存
+    location ~* \.(css|js|svg|png|jpg|woff2?)$ {
+        expires 7d;
+        access_log off;
+    }
+}

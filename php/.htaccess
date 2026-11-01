@@ -1,0 +1,14 @@
+Options -Indexes -MultiViews +FollowSymLinks
+
+<IfModule mod_rewrite.c>
+RewriteEngine On
+
+# 禁止通过 HTTP 直接访问应用代码与数据目录（PHP 内部 require 不受影响，子目录部署同样生效）
+RewriteRule (^|/)(app|data)(/|$) - [F]
+
+# 无 PATH_INFO 环境下的接口回退：/api.php/xxx -> /api.php?api=xxx
+RewriteRule ^(.*/)?api\.php/(.+)$ $1api.php?api=$2 [QSA,L]
+
+# 干净地址：/dashboard -> dashboard.php
+RewriteRule ^(.*/)?dashboard/?$ $1dashboard.php [L,QSA]
+</IfModule>
