@@ -58,7 +58,7 @@ function cns_expire_sweep(): array
 
         // 2) 到期：删除上游解析，本地记录保留以便续期恢复
         if ($sub['status'] === 'active' && $expires <= $now) {
-            cns_transaction(function () use ($sub, $id) {
+            cns_transaction(function () use ($sub, $id, $expires) {
                 try {
                     $provider = dns_provider((string)$sub['provider_type']);
                 } catch (Throwable $e) {
@@ -77,7 +77,8 @@ function cns_expire_sweep(): array
                 }
                 cns_exec(
                     'UPDATE ' . cns_table('subdomains') . " SET status='expired', expired_at=?, remind_stage='paused' WHERE id = ?",
-                    [cns_now(), $id]
+                    // 宽限期从真实到期时间起算，否则 cron 停机期间到期的域名会白送一段宽限期
+                    [date('Y-m-d H:i:s', $expires), $id]
                 );
             });
             $deadline = date('Y-m-d H:i:s', $expires + $graceDays * 86400);
